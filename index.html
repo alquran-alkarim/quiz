@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
+<html lang="ar" dir="rtl"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quiz - القرآن الكريم</title>
@@ -415,37 +414,18 @@
   <div id="screen-ready" class="screen">
     <h2>اختبار التلاوة</h2>
     <p>اختر نطاق المراجعة، ثم ستُعرض آية عشوائية من داخله،<br>
-       اتلُ ما بعدها، ثم تُtلى الآيات التالية حسب اختيارك.</p>
-    
+       اتلُ ما بعدها، ثم تُتلى الآيات التالية حسب اختيارك.</p>
     <div class="range-picker">
       <div class="range-row">
-        <span class="range-label">النوع</span>
-        <select id="filter-type" onchange="toggleFilterMode()">
-          <option value="surah" selected>بالمعوذة / السورة</option>
-          <option value="juz">بالجزء</option>
-        </select>
+        <span class="range-label">من</span>
+        <select id="from-surah"></select>
+        <select id="from-aya" class="aya-select"></select>
       </div>
-
-      <div id="surah-selectors">
-        <div class="range-row">
-          <span class="range-label">من</span>
-          <select id="from-surah"></select>
-          <select id="from-aya" class="aya-select"></select>
-        </div>
-        <div class="range-row">
-          <span class="range-label">إلى</span>
-          <select id="to-surah"></select>
-          <select id="to-aya" class="aya-select"></select>
-        </div>
+      <div class="range-row">
+        <span class="range-label">إلى</span>
+        <select id="to-surah"></select>
+        <select id="to-aya" class="aya-select"></select>
       </div>
-
-      <div id="juz-selectors" style="display: none;">
-        <div class="range-row">
-          <span class="range-label">الجزء</span>
-          <select id="juz-select"></select>
-        </div>
-      </div>
-
       <div class="range-row">
         <span class="range-label">المقطع</span>
         <select id="answer-count">
@@ -475,7 +455,7 @@
           <option value="128/ar.mahermuaiqly">ماهر المعيقلي</option>
           <option value="64/ar.abdulsamad">عبدالباسط عبدالصمد</option>
           <option value="128/ar.husary">محمود الحصري</option>
-          <option value="128/ar.saoodshuraym">سعود الشريم</option>
+          <option value="64/ar.saoodshuraym">سعود الشريم</option>
           <option value="128/ar.shaatree">أبو بكر الشاطري</option>
           <option value="128/ar.ahmedajamy">أحمد العجمي</option>
           <option value="128/ar.hudhaify">علي الحذيفي</option>
@@ -530,20 +510,6 @@
   const RADIUS = 38;
   const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
-  // Juz Static Global Verse Range Map (Juz 1 - 30)
-  const JUZ_MAP = {
-    1: { start: 1, end: 148 },     2: { start: 149, end: 259 },   3: { start: 260, end: 385 },
-    4: { start: 386, end: 516 },   5: { start: 517, end: 640 },   6: { start: 641, end: 750 },
-    7: { start: 751, end: 898 },   8: { start: 899, end: 1040 },  9: { start: 1041, end: 1199 },
-    10: { start: 1200, end: 1327 }, 11: { start: 1328, end: 1478 }, 12: { start: 1479, end: 1648 },
-    13: { start: 1649, end: 1803 }, 14: { start: 1804, end: 2043 }, 15: { start: 2044, end: 2228 },
-    16: { start: 2229, end: 2356 }, 17: { start: 2357, end: 2546 }, 18: { start: 2547, end: 2736 },
-    19: { start: 2737, end: 3079 }, 20: { start: 3080, end: 3245 }, 21: { start: 3246, end: 3424 },
-    22: { start: 3425, end: 3687 }, 23: { start: 3688, end: 4044 }, 24: { start: 4045, end: 4219 },
-    25: { start: 4220, end: 4465 }, 26: { start: 4466, end: 4660 }, 27: { start: 4661, end: 5060 },
-    28: { start: 5061, end: 5197 }, 29: { start: 5198, end: 5628 }, 30: { start: 5629, end: 6236 }
-  };
-
   // ── State ───────────────────────────────────────────────────────
   let ayaByGlobal = {};      // global aya number -> { text, surah, surahName, inSurah }
   let surahList = [];        // [{ number, name, count, firstGlobal }] indexed by surah-1
@@ -562,8 +528,8 @@
 
   // ── DOM refs ────────────────────────────────────────────────────
   const $screens   = document.querySelectorAll('.screen');
-  const $surah      = document.getElementById('surah-label');
-  const $badge      = document.getElementById('status-badge');
+  const $surah     = document.getElementById('surah-label');
+  const $badge     = document.getElementById('status-badge');
   const $ayaNum    = document.getElementById('aya-num');
   const $ayaText   = document.getElementById('aya-text');
   const $timerWrap = document.getElementById('timer-wrap');
@@ -598,6 +564,7 @@
     $screens.forEach(s => s.classList.remove('active'));
     document.getElementById('screen-' + id).classList.add('active');
     
+    // Atur visibilitas tombol back berdasarkan screen aktif
     if (id === 'quiz' || id === 'complete') {
       $btnBack.style.display = 'inline-block';
     } else {
@@ -632,7 +599,6 @@
         });
       });
       populateRangePickers();
-      populateJuzDropdown();
       showScreen('ready');
     } catch (e) {
       document.getElementById('error-msg').textContent = 'تعذّر تحميل البيانات. تحقق من اتصالك بالإنترنت.';
@@ -653,26 +619,6 @@
     fillAyaSelect($toSurah, $toAya, 'last');
   }
 
-  function populateJuzDropdown() {
-    const $juzSel = document.getElementById('juz-select');
-    let opts = '';
-    for (let i = 1; i <= 30; i++) {
-      opts += `<option value="${i}">الجزء ${toArabicNum(i)}</option>`;
-    }
-    $juzSel.innerHTML = opts;
-  }
-
-  function toggleFilterMode() {
-    const mode = document.getElementById('filter-type').value;
-    if (mode === 'surah') {
-      document.getElementById('surah-selectors').style.display = 'block';
-      document.getElementById('juz-selectors').style.display = 'none';
-    } else {
-      document.getElementById('surah-selectors').style.display = 'none';
-      document.getElementById('juz-selectors').style.display = 'block';
-    }
-  }
-
   function fillAyaSelect($surahSel, $ayaSel, which) {
     const s = surahList[parseInt($surahSel.value, 10) - 1];
     let opts = '';
@@ -685,21 +631,13 @@
   $toSurah.addEventListener('change', () => fillAyaSelect($toSurah, $toAya, 'last'));
 
   function globalOf(surahNum, ayaNum) {
-    return surahList[surNum - 1].firstGlobal + (ayaNum - 1);
+    return surahList[surahNum - 1].firstGlobal + (ayaNum - 1);
   }
 
+  // ── Start a session over the chosen range ───────────────────────
   function startSession() {
-    let fromG, toG;
-    const mode = document.getElementById('filter-type').value;
-
-    if (mode === 'surah') {
-      fromG = surahList[+$fromSurah.value - 1].firstGlobal + (+$fromAya.value - 1);
-      toG   = surahList[+$toSurah.value - 1].firstGlobal + (+$toAya.value - 1);
-    } else {
-      const selectedJuz = +document.getElementById('juz-select').value;
-      fromG = JUZ_MAP[selectedJuz].start;
-      toG   = JUZ_MAP[selectedJuz].end;
-    }
+    const fromG = globalOf(+$fromSurah.value, +$fromAya.value);
+    const toG   = globalOf(+$toSurah.value, +$toAya.value);
 
     if (fromG > toG) {
       return showRangeError('النطاق غير صحيح: تأكد أن البداية تسبق النهاية.');
@@ -740,12 +678,16 @@
     $bar.style.width = total > 0 ? `${(completedCount / total) * 100}%` : '0%';
   }
 
+  // Fungsi Keluar/Back dari Sesi Kuis ke Halaman Utama
   function exitSession() {
     stopAudio();
     stopTimer();
+    
+    // Reset teks header & label progress ke default awal
     $surah.textContent = "القرآن الكريم";
     $progress.textContent = "٠ / ٠";
     $bar.style.width = "0%";
+    
     showScreen('ready');
   }
 
