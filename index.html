@@ -348,7 +348,7 @@
         <span class="range-label">المدة</span>
         <select id="timer-seconds">
           <option value="10">١٠ ثوانٍ</option>
-          <option value="15">١5 ثانية</option>
+          <option value="15">١٥ ثانية</option>
           <option value="20">٢٠ ثانية</option>
           <option value="30" selected="">٣٠ ثانية</option>
           <option value="45">٤٥ ثانية</option>
@@ -418,7 +418,7 @@
   const RADIUS = 38;
   const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
-  // بيانات فهارس الأجزاء: [رقم السورة، رقم الآية] لكل جزء من 1 إلى 30
+  // فهارس الأجزاء الدقيقة
   const JUZ_MAPPING = {
     1:  { start: [1, 1],   end: [2, 141] },
     2:  { start: [2, 142], end: [2, 252] },
@@ -467,7 +467,7 @@
   let currentAudio = null;
   let autoAdvance = false;
   let isChainingActive = false;
-  let activeMode = 'surah'; // الوضع الافتراضي: سورة أو جزء
+  let activeMode = 'surah'; 
 
   // ── DOM refs ────────────────────────────────────────────────────
   const $screens   = document.querySelectorAll('.screen');
@@ -494,7 +494,6 @@
   const $rangeErr  = document.getElementById('range-error');
   const $btnBack   = document.getElementById('btn-back');
 
-  // ── Init ring ───────────────────────────────────────────────────
   $ring.style.strokeDasharray = CIRCUMFERENCE;
   $ring.style.strokeDashoffset = 0;
 
@@ -557,7 +556,7 @@
   }
 
   function populateRangePickers() {
-    // بناء سور القائمة
+    // بناء السور
     const surahOpts = surahList
       .map(s => `<option value="${s.number}">${toArabicNum(s.number)}. ${s.name}</option>`)
       .join('');
@@ -568,7 +567,7 @@
     fillAyaSelect($fromSurah, $fromAya, 'first');
     fillAyaSelect($toSurah, $toAya, 'last');
 
-    // بناء قائمة الأجزاء
+    // بناء قائمة الأجزاء بشكل آمن وصحيح
     let juzOpts = '';
     for (let j = 1; j <= 30; j++) {
       juzOpts += `<option value="${j}">الجزء ${toArabicNum(j)}</option>`;
@@ -578,6 +577,7 @@
 
   function fillAyaSelect($surahSel, $ayaSel, which) {
     const s = surahList[parseInt($surahSel.value, 10) - 1];
+    if (!s) return;
     let opts = '';
     for (let i = 1; i <= s.count; i++) opts += `<option value="${i}">${toArabicNum(i)}</option>`;
     $ayaSel.innerHTML = opts;
@@ -588,10 +588,11 @@
   $toSurah.addEventListener('change', () => fillAyaSelect($toSurah, $toAya, 'last'));
 
   function globalOf(surahNum, ayaNum) {
-    return surahList[surahNum - 1].firstGlobal + (ayaNum - 1);
+    const s = surahList[surahNum - 1];
+    return s ? s.firstGlobal + (ayaNum - 1) : 1;
   }
 
-  // ── Start Session Logic (Enhanced for Juz) ───────────────────────
+  // ── Start Session Logic ──────────────────────────────────────────
   function startSession() {
     let fromG, toG;
 
@@ -613,8 +614,7 @@
     for (let g = fromG; g <= toG; g++) {
       const cur = ayaByGlobal[g];
       const next = ayaByGlobal[g + 1];
-      // السماح بأن تكون الآية سؤالاً طالما أن لها آية تالية تابعة لنفس النطاق والسورة
-      if (next && next.surah === cur.surah && (g + 1 <= toG)) {
+      if (cur && next && next.surah === cur.surah && (g + 1 <= toG)) {
         promptPool.push(g);
       }
     }
