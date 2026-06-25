@@ -30,7 +30,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 16px 12px 30px; /* Dikurangi sedikit agar muat di HP pendek */
+      padding: 16px 12px 30px;
     }
 
     /* ── Header ── */
@@ -42,7 +42,7 @@
       align-items: center;
       padding: 12px 4px 20px;
       border-bottom: 1px solid var(--border);
-      margin-bottom: 24px; /* Dikurangi dari 36px */
+      margin-bottom: 24px;
       position: relative;
     }
 
@@ -122,11 +122,11 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 24px 20px; /* Dioptimalkan dari 40px 36px agar hemat ruang di HP */
+      padding: 24px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px; /* Dikurangi dari 28px */
+      gap: 20px;
       position: relative;
       min-height: 340px;
       justify-content: center;
@@ -135,7 +135,6 @@
     .screen { display: none; width: 100%; flex-direction: column; align-items: center; gap: 20px; }
     .screen.active { display: flex; }
 
-    /* Loading & Error */
     #screen-loading { gap: 16px; }
     .spinner {
       width: 40px; height: 40px;
@@ -149,15 +148,12 @@
     #screen-error { gap: 16px; text-align: center; }
     #screen-error p { color: #f87171; font-size: 1rem; }
 
-    /* Ready */
     #screen-ready { text-align: center; gap: 16px; width: 100%; }
     #screen-ready h2 { font-size: 1.5rem; color: var(--gold-light); }
     #screen-ready p { color: var(--text-dim); font-size: 0.95rem; line-height: 1.5; }
 
-    /* Quiz */
     #screen-quiz { gap: 20px; }
 
-    /* Status badge */
     #status-badge {
       display: inline-flex;
       align-items: center;
@@ -203,7 +199,6 @@
     }
     #aya-text.fading { opacity: 0; }
 
-    /* Timer */
     #timer-wrap {
       display: flex;
       flex-direction: column;
@@ -219,13 +214,11 @@
     #timer-text { font-family: system-ui, sans-serif; font-size: 1.1rem; font-weight: 700; fill: var(--text); }
     #timer-label { font-size: 0.8rem; color: var(--text-dim); font-family: system-ui, sans-serif; }
 
-    /* Complete */
     #screen-complete { text-align: center; gap: 16px; }
     #screen-complete .trophy { font-size: 3rem; line-height: 1; }
     #screen-complete h2 { font-size: 1.5rem; color: var(--gold-light); }
     #screen-complete p { color: var(--text-dim); font-size: 0.95rem; line-height: 1.6; }
 
-    /* Buttons */
     .btn { font-family: 'Amiri', serif; font-size: 1.1rem; padding: 12px 32px; border-radius: 10px; border: none; cursor: pointer; transition: opacity 0.2s, transform 0.1s; font-weight: 700; width: 100%; max-width: 280px; }
     .btn:hover { opacity: 0.88; }
     .btn:active { transform: scale(0.97); }
@@ -237,7 +230,6 @@
 
     #controls { display: flex; flex-direction: column; align-items: center; gap: 10px; min-height: 60px; width: 100%; }
 
-    /* Audio Indicator */
     #audio-indicator { display: none; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text-dim); font-family: system-ui, sans-serif; }
     #audio-indicator.playing { display: flex; }
     .audio-bar { width: 3px; border-radius: 2px; background: var(--gold); animation: bar 0.8s ease-in-out infinite alternate; }
@@ -247,11 +239,9 @@
     .audio-bar:nth-child(5) { height: 16px; animation-delay: 0.15s; }
     @keyframes bar { from { opacity: 0.4; } to { opacity: 1; } }
 
-    /* Progress bar */
     #progress-bar-wrap { width: 100%; max-width: 680px; height: 4px; background: var(--border); border-radius: 2px; margin-bottom: -12px; }
     #progress-bar { height: 100%; background: var(--gold); border-radius: 2px; width: 0%; transition: width 0.4s; }
 
-    /* Range picker & Mode Switcher */
     .range-picker { display: flex; flex-direction: column; gap: 12px; width: 100%; }
     .range-row { display: flex; align-items: center; gap: 10px; width: 100%; }
     .range-label { font-size: 0.95rem; font-weight: 700; color: var(--gold-light); width: 50px; text-align: right; flex-shrink: 0; }
@@ -267,7 +257,7 @@
     #range-error { color: #f87171; font-size: 0.9rem; display: none; }
 
     #container-mode-surah { width: 100%; display: flex; flex-direction: column; gap: 12px; }
-    #container-mode-juz { width: 100%; }
+    #container-mode-juz { width: 100%; display: flex; flex-direction: column; gap: 12px; }
   </style>
 </head>
 <body>
@@ -302,7 +292,7 @@
   <div id="screen-ready" class="screen">
     <h2>اختبار التلاوة</h2>
     <p>اختر نطاق المراجعة، ثم ستُعرض آية عشوائية من داخله،<br>
-       اتلُ ما بعدها، ثم تُتلى الآيات التالية حسب اختيارك.</p>
+       اتلُ ما بعدها، ثم تُtلى الآيات التالية حسب اختيارك.</p>
     
     <div class="range-picker">
       <div class="mode-container">
@@ -328,9 +318,13 @@
       </div>
 
       <div id="container-mode-juz" style="display: none;">
+        <div class="range-row" style="margin-bottom: 10px;">
+          <span class="range-label">من</span>
+          <select id="from-juz"></select>
+        </div>
         <div class="range-row">
-          <span class="range-label">الجزء</span>
-          <select id="select-juz"></select>
+          <span class="range-label">إلى</span>
+          <select id="to-juz"></select>
         </div>
       </div>
 
@@ -347,6 +341,7 @@
       <div class="range-row">
         <span class="range-label">المدة</span>
         <select id="timer-seconds">
+          <option value="0">بدون مؤقت (٠)</option>
           <option value="10">١٠ ثوانٍ</option>
           <option value="15">١٥ ثانية</option>
           <option value="20">٢٠ ثانية</option>
@@ -399,10 +394,11 @@
     </div>
 
     <div id="controls">
+      <button id="btn-skip-audio" class="btn btn-secondary" style="display: none; background: rgba(217, 119, 6, 0.2); border-color: var(--gold); margin-bottom: 4px;" onclick="skipCurrentAyaAudio()">تخطي هذه الآية ⏭️</button>
+      
       <button id="btn-next" class="btn btn-primary" onclick="startRound()">التالي ←</button>
       <button id="btn-skip" class="btn btn-secondary" onclick="skipToReveal()">تخطي المؤقت</button>
     </div>
-  </div>
 
   <div id="screen-complete" class="screen">
     <div class="trophy">🏆</div>
@@ -418,7 +414,6 @@
   const RADIUS = 38;
   const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
-  // فهارس الأجزاء الدقيقة
   const JUZ_MAPPING = {
     1:  { start: [1, 1],   end: [2, 141] },
     2:  { start: [2, 142], end: [2, 252] },
@@ -466,6 +461,7 @@
   let timerRemaining = timerSeconds;
   let currentAudio = null;
   let autoAdvance = false;
+  let autoAdvanceTimeout = null;
   let isChainingActive = false;
   let activeMode = 'surah'; 
 
@@ -480,6 +476,7 @@
   const $timerTxt  = document.getElementById('timer-text');
   const $btnNext   = document.getElementById('btn-next');
   const $btnSkip   = document.getElementById('btn-skip');
+  const $btnSkipAudio = document.getElementById('btn-skip-audio');
   const $audioInd  = document.getElementById('audio-indicator');
   const $progress  = document.getElementById('progress-label');
   const $bar       = document.getElementById('progress-bar');
@@ -487,7 +484,8 @@
   const $fromAya   = document.getElementById('from-aya');
   const $toSurah   = document.getElementById('to-surah');
   const $toAya     = document.getElementById('to-aya');
-  const $selectJuz = document.getElementById('select-juz');
+  const $fromJuz   = document.getElementById('from-juz');
+  const $toJuz     = document.getElementById('to-juz');
   const $timerSel  = document.getElementById('timer-seconds');
   const $answerSel = document.getElementById('answer-count');
   const $reciterSel = document.getElementById('reciter');
@@ -511,17 +509,15 @@
     }
   }
 
-  // ── Switch Mode (Surah / Juz) ──────────────────────────────────
   function switchMode(mode) {
     activeMode = mode;
     document.getElementById('lbl-mode-surah').classList.toggle('active', mode === 'surah');
     document.getElementById('lbl-mode-juz').classList.toggle('active', mode === 'juz');
-    document.getElementById('container-mode-surah').style.display = mode === 'surah' ? 'block' : 'none';
-    document.getElementById('container-mode-juz').style.display = mode === 'juz' ? 'block' : 'none';
+    document.getElementById('container-mode-surah').style.display = mode === 'surah' ? 'flex' : 'none';
+    document.getElementById('container-mode-juz').style.display = mode === 'juz' ? 'flex' : 'none';
     hideRangeError();
   }
 
-  // ── Load Quran data ─────────────────────────────────────────────
   async function loadQuran() {
     showScreen('loading');
     try {
@@ -556,7 +552,6 @@
   }
 
   function populateRangePickers() {
-    // بناء السور
     const surahOpts = surahList
       .map(s => `<option value="${s.number}">${toArabicNum(s.number)}. ${s.name}</option>`)
       .join('');
@@ -567,12 +562,14 @@
     fillAyaSelect($fromSurah, $fromAya, 'first');
     fillAyaSelect($toSurah, $toAya, 'last');
 
-    // بناء قائمة الأجزاء بشكل آمن وصحيح
     let juzOpts = '';
     for (let j = 1; j <= 30; j++) {
       juzOpts += `<option value="${j}">الجزء ${toArabicNum(j)}</option>`;
     }
-    $selectJuz.innerHTML = juzOpts;
+    $fromJuz.innerHTML = juzOpts;
+    $toJuz.innerHTML = juzOpts;
+    $fromJuz.value = '1';
+    $toJuz.value = '30';
   }
 
   function fillAyaSelect($surahSel, $ayaSel, which) {
@@ -592,7 +589,62 @@
     return s ? s.firstGlobal + (ayaNum - 1) : 1;
   }
 
-  // ── Start Session Logic ──────────────────────────────────────────
+  function showRangeError(msg) {
+    $rangeErr.textContent = msg;
+    $rangeErr.style.display = 'block';
+  }
+
+  function hideRangeError() {
+    $rangeErr.textContent = '';
+    $rangeErr.style.display = 'none';
+  }
+
+  function updateProgress() {
+    if (promptPool.length === 0) return;
+    $progress.textContent = `${toArabicNum(completedCount)} / ${toArabicNum(promptPool.length)}`;
+    const pct = (completedCount / promptPool.length) * 100;
+    $bar.style.width = pct + '%';
+  }
+
+  function stopAudio() {
+    isChainingActive = false;
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.onended = null;
+      currentAudio.onerror = null;
+      currentAudio = null;
+    }
+    if (autoAdvanceTimeout) {
+      clearTimeout(autoAdvanceTimeout);
+    }
+    $audioInd.classList.remove('playing');
+    $btnSkipAudio.style.display = 'none';
+  }
+
+  function stopTimer() {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+  }
+
+  function updateTimerRing() {
+    $timerTxt.textContent = timerRemaining;
+    if (timerRemaining <= 5) {
+      $ring.classList.add('urgent');
+    } else {
+      $ring.classList.remove('urgent');
+    }
+    const offset = CIRCUMFERENCE - (timerRemaining / timerSeconds) * CIRCUMFERENCE;
+    $ring.style.strokeDashoffset = offset;
+  }
+
+  function exitSession() {
+    stopAudio();
+    stopTimer();
+    showScreen('ready');
+  }
+
   function startSession() {
     let fromG, toG;
 
@@ -600,10 +652,18 @@
       fromG = globalOf(+$fromSurah.value, +$fromAya.value);
       toG   = globalOf(+$toSurah.value, +$toAya.value);
     } else {
-      const selectedJuzNum = +$selectJuz.value;
-      const boundary = JUZ_MAPPING[selectedJuzNum];
-      fromG = globalOf(boundary.start[0], boundary.start[1]);
-      toG   = globalOf(boundary.end[0], boundary.end[1]);
+      const startJuzNum = +$fromJuz.value;
+      const endJuzNum   = +$toJuz.value;
+
+      if (startJuzNum > endJuzNum) {
+        return showRangeError('النطاق غير صحيح: تأكد أن الجزء الأول يسبق الجزء الثاني.');
+      }
+
+      const startBoundary = JUZ_MAPPING[startJuzNum];
+      const endBoundary   = JUZ_MAPPING[endJuzNum];
+
+      fromG = globalOf(startBoundary.start[0], startBoundary.start[1]);
+      toG   = globalOf(endBoundary.end[0], endBoundary.end[1]);
     }
 
     if (fromG > toG) {
@@ -630,39 +690,11 @@
     usedAyas = new Set();
     completedCount = 0;
     updateProgress();
+    
     startRound();
   }
 
-  function showRangeError(msg) { $rangeErr.textContent = msg; $rangeErr.style.display = 'block'; }
-  function hideRangeError() { $rangeErr.style.display = 'none'; }
-
-  function updateProgress() {
-    const total = promptPool.length;
-    $progress.textContent = `${toArabicNum(completedCount)} / ${toArabicNum(total)}`;
-    $bar.style.width = total > 0 ? `${(completedCount / total) * 100}%` : '0%';
-  }
-
-  function exitSession() {
-    stopAudio();
-    stopTimer();
-    $surah.textContent = "القرآن الكريم";
-    $progress.textContent = "٠ / ٠";
-    $bar.style.width = "0%";
-    showScreen('ready');
-  }
-
-  function stopAudio() {
-    isChainingActive = false;
-    if (currentAudio) {
-      currentAudio.onended = null;
-      currentAudio.onerror = null;
-      currentAudio.pause();
-      currentAudio = null;
-    }
-    $audioInd.classList.remove('playing');
-  }
-
-  function stopTimer() { clearInterval(timerInterval); timerInterval = null; }
+  // ── ALUR KUIS UTAMA (3 TAHAPAN) ──
 
   function startRound() {
     stopAudio();
@@ -688,8 +720,50 @@
     $ayaText.classList.remove('fading');
 
     $btnNext.style.display = 'none';
-    $btnSkip.style.display = 'inline-block';
+    $btnSkip.style.display = 'none'; 
+    $btnSkipAudio.style.display = 'none';
+    $timerWrap.classList.add('hidden');
+
+    showScreen('quiz');
+    playQuestionAudio(currentPromptAya);
+  }
+
+  function playQuestionAudio(globalId) {
+    isChainingActive = true; 
+
+    const url = `https://cdn.islamic.network/quran/audio/${reciter}/${globalId}.mp3`;
+    currentAudio = new Audio(url);
+    $audioInd.classList.add('playing'); 
+
+    currentAudio.onended = () => {
+      if (!isChainingActive) return;
+      $audioInd.classList.remove('playing'); 
+      initiateTimerPhase(); 
+    };
+
+    currentAudio.onerror = () => {
+      if (!isChainingActive) return;
+      $audioInd.classList.remove('playing');
+      initiateTimerPhase();
+    };
+
+    currentAudio.play().catch(e => { 
+      if (!isChainingActive) return;
+      $audioInd.classList.remove('playing');
+      initiateTimerPhase();
+    });
+  }
+
+  function initiateTimerPhase() {
+    if (!document.getElementById('screen-quiz').classList.contains('active')) return;
+
+    if (timerSeconds === 0) {
+      revealAnswer();
+      return;
+    }
+
     $timerWrap.classList.remove('hidden');
+    $btnSkip.style.display = 'inline-block'; 
 
     timerRemaining = timerSeconds;
     updateTimerRing();
@@ -699,26 +773,20 @@
       updateTimerRing();
       if (timerRemaining <= 0) {
         stopTimer();
-        revealAnswer();
+        revealAnswer(); 
       }
     }, 1000);
-
-    showScreen('quiz');
   }
 
-  function updateTimerRing() {
-    $timerTxt.textContent = timerRemaining;
-    if (timerRemaining <= 5) $ring.classList.add('urgent');
-    else $ring.classList.remove('urgent');
-    const offset = CIRCUMFERENCE - (timerRemaining / timerSeconds) * CIRCUMFERENCE;
-    $ring.style.strokeDashoffset = offset;
+  function skipToReveal() { 
+    stopTimer(); 
+    revealAnswer(); 
   }
-
-  function skipToReveal() { stopTimer(); revealAnswer(); }
 
   function revealAnswer() {
     $timerWrap.classList.add('hidden');
     $btnSkip.style.display = 'none';
+    $btnSkipAudio.style.display = 'inline-block'; 
     $badge.className = 'reveal';
     $badge.textContent = 'الإجابة التلقائية';
     $btnNext.style.display = 'inline-block';
@@ -749,6 +817,7 @@
       if (!isChainingActive) return;
       if (currentChainIndex >= answerAyas.length) {
         $audioInd.classList.remove('playing');
+        $btnSkipAudio.style.display = 'none';
         finishRound();
         return;
       }
@@ -764,7 +833,7 @@
 
       const url = `https://cdn.islamic.network/quran/audio/${reciter}/${node.global}.mp3`;
       currentAudio = new Audio(url);
-      $audioInd.classList.add('playing');
+      $audioInd.classList.add('playing'); 
 
       currentAudio.onended = () => {
         if (!isChainingActive) return;
@@ -773,23 +842,34 @@
       };
 
       currentAudio.onerror = () => {
-        console.error("Audio failed to load, skipping to next verse.");
         if (!isChainingActive) return;
         currentChainIndex++;
         setTimeout(playNextChainNode, 1500); 
       };
 
-      currentAudio.play().catch(e => { console.warn("Autoplay blocked or stream interrupted."); });
+      currentAudio.play().catch(e => { console.warn("Autoplay terblokir."); });
     }
 
     playNextChainNode();
   }
 
+  function skipCurrentAyaAudio() {
+    if (currentAudio && isChainingActive) {
+      const originalOnEnded = currentAudio.onended;
+      currentAudio.pause();
+      currentAudio = null;
+      if (originalOnEnded) {
+        originalOnEnded(); 
+      }
+    }
+  }
+
   function finishRound() {
+    $btnSkipAudio.style.display = 'none';
     completedCount++;
     updateProgress();
     if (autoAdvance) {
-      setTimeout(() => {
+      autoAdvanceTimeout = setTimeout(() => {
         if (document.getElementById('screen-quiz').classList.contains('active')) {
           startRound();
         }
